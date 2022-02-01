@@ -19,11 +19,12 @@
 </template>
 
 <script>
-import {getLoginStatus} from '../api'
-import {util} from '../utils'
+import {getLoginStatus} from '../api/index'
+import {mixin} from '../mixins/index'
 
 export default {
-  utils: [util],
+  // mixins vue混入方法限定名
+  mixins: [mixin],
   data: function () {
     return {
       ruleForm: {
@@ -48,6 +49,7 @@ export default {
       getLoginStatus(params)
         .then((res) => {
           if (res.code === 1) {
+            this.$router.push('/Info')
             this.notify('登录成功', 'success')
           } else {
             this.notify('登录失败', 'error')

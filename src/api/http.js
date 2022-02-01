@@ -10,12 +10,12 @@ axios.defaults.baseURL = 'http://localhost:8080'
 
 // 响应拦截器
 axios.interceptors.response.use(
-  respone => {
-    // 如果 respone里面的status是200,说明访问到接口了,否则访问错误
-    if (respone.status === 200) {
-      return Promise.resolve(respone)
+  response => {
+    // 如果 response里面的status是200,说明访问到接口了,否则访问错误
+    if (response.status === 200) {
+      return Promise.resolve(response)
     } else {
-      return Promise.reject(respone)
+      return Promise.reject(response)
     }
   },
   error => {
