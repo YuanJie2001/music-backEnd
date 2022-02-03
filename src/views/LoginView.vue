@@ -19,8 +19,8 @@
 </template>
 
 <script>
-import {getLoginStatus} from '../api/index'
-import {mixin} from '../mixins/index'
+import {getLoginStatus} from '../network/interface'
+import {mixin} from '../mixins'
 
 export default {
   // mixins vue混入方法限定名
@@ -49,6 +49,7 @@ export default {
       getLoginStatus(params)
         .then((res) => {
           if (res.code === 1) {
+            localStorage.setItem('userName', this.ruleForm.username)
             this.$router.push('/Info')
             this.notify('登录成功', 'success')
           } else {
