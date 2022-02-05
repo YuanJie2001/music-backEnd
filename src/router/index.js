@@ -1,11 +1,12 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../components/Home'
-import InfoPage from '../views/InfoView'
-import ConsumerPage from '../views/ConsumerView'
-import SingerPage from '../views/SingerView'
-import SongListPage from '../views/SongListView'
+import InfoView from '../views/InfoView'
+import ConsumerView from '../views/ConsumerView'
+import SingerView from '../views/SingerView'
+import SongListView from '../views/SongListView'
 import Login from '../views/LoginView'
+import SongView from '../views/SongView'
 // 1.安装VueRouter
 Vue.use(VueRouter)
 // 2.配置路由信息
@@ -20,19 +21,23 @@ const routes = [
     children: [
       {
         path: '/Info',
-        component: InfoPage
+        component: InfoView
       },
       {
         path: '/Consumer',
-        component: ConsumerPage
+        component: ConsumerView
       },
       {
         path: '/Singer',
-        component: SingerPage
+        component: SingerView
       },
       {
         path: '/SongList',
-        component: SongListPage
+        component: SongListView
+      },
+      {
+        path: '/Song',
+        component: SongView
       }
     ]
   }

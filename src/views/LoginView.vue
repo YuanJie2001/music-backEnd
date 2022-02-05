@@ -20,7 +20,7 @@
 
 <script>
 import {getLoginStatus} from '../network/interface'
-import {mixin} from '../mixins'
+import {mixin} from '../mixins/common'
 
 export default {
   // mixins vue混入方法限定名
