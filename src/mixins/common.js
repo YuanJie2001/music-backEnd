@@ -66,8 +66,8 @@ export const mixin = {
       }
     },
     // 弹出删除窗口
-    handleDelete (id) {
-      this.idx = id
+    handleDelete (obj) {
+      this.idx = obj
       this.deleteVisible = true
     },
     // 把已经选择的项赋值给multipleSelection

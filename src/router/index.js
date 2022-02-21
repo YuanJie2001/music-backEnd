@@ -2,11 +2,13 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../components/Home'
 import InfoView from '../views/InfoView'
-import ConsumerView from '../views/ConsumerView'
 import SingerView from '../views/SingerView'
 import SongListView from '../views/SongListView'
 import Login from '../views/LoginView'
 import SongView from '../views/SongView'
+import ListSongView from '../views/ListSongView'
+import UserView from '../views/UserView'
+import Collect from '../views/Collect'
 // 1.安装VueRouter
 Vue.use(VueRouter)
 // 2.配置路由信息
@@ -24,8 +26,8 @@ const routes = [
         component: InfoView
       },
       {
-        path: '/Consumer',
-        component: ConsumerView
+        path: '/User',
+        component: UserView
       },
       {
         path: '/Singer',
@@ -38,6 +40,14 @@ const routes = [
       {
         path: '/Song',
         component: SongView
+      },
+      {
+        path: '/ListSong',
+        component: ListSongView
+      },
+      {
+        path: '/Collect',
+        component: Collect
       }
     ]
   }

@@ -16,22 +16,47 @@
           <div class="song-img">
             <img :src="getUrl(scope.row.picture)" style="width: 100%" alt="">
           </div>
+          <div class="play" @click="setSongUrl(scope.row.url,scope.row.name)">
+            <div v-if="toggle === scope.row.name">
+              <svg class="icon">
+                <use xlink:href="#icon-zanting"></use>
+              </svg>
+            </div>
+            <div v-else>
+              <svg class="icon">
+                <use xlink:href="#icon-bofanganniu"></use>
+              </svg>
+            </div>
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column prop="name" label="歌手-歌名" width="120px" align="center"/>
+      <el-table-column prop="introduction" label="专辑" width="150px" align="center"/>
+
+      <el-table-column label="歌词" align="center">
+        <template slot-scope="scope">
+          <ul style="height: 100px; overflow: scroll">
+            <li v-for="(item,index) in parseLyric(scope.row.lyric)" :key="index">
+              {{ item }}
+            </li>
+          </ul>
+        </template>
+      </el-table-column>
+      <el-table-column prop="createTime" label="创建时间" width="150px" align="center"/>
+      <el-table-column prop="updateTime" label="修改时间" width="150px" align="center"/>
+      <el-table-column label="资源更新" align="center" width="100px">
+        <template slot-scope="scope">
           <el-upload :action="uploadUrl(scope.row.id)"
                      :before-upload="beforeAvatorUpload"
                      :on-success="handleAvatorSuccess">
             <el-button size="mini">更新图片</el-button>
           </el-upload>
-        </template>
-      </el-table-column>
-      <el-table-column prop="name" label="歌手-歌名" width="120px" align="center"/>
-      <el-table-column prop="introduction" label="专辑" width="150px" align="center"/>
-      <el-table-column label="歌词" align="center">
-        <template slot-scope="scope">
-          <ul style="height: 100px; overflow: scroll">
-            <li v-for="(item,index) in parseLyric(scope.row.lyric)" :key="index">
-              {{item}}
-            </li>
-          </ul>
+          <br>
+          <el-upload :action="uploadSongUrl(scope.row.id)"
+                     :before-upload="beforeSongUpload"
+                     :on-success="handleSongSuccess">
+            <el-button size="mini">更新歌曲</el-button>
+          </el-upload>
         </template>
       </el-table-column>
       <el-table-column label="操作" width="150px" align="center">
@@ -45,7 +70,7 @@
       <el-pagination
         background
         layout="total,prev,pager,next"
-        :current-page="cunrrentPage"
+        :current-page="currentPage"
         :page-size="pageSize"
         :total="tableData.length"
         @current-change="handleCurrentChange"
@@ -103,8 +128,10 @@
 </template>
 
 <script>
-import {deleteSong, songOfSingerId, updateSong} from '../network/interface'
 import {mixin} from '../mixins/common'
+import {mapGetters} from 'vuex'
+import '@/assets/js/iconfont.js'
+import {deleteSong, songOfSingerId, updateSong} from '../network/interface'
 
 export default {
   // mixins vue混入方法限定名
@@ -133,15 +160,19 @@ export default {
       tempData: [],
       select_word: '',
       pageSize: 5, // 分页,每页数据
-      cunrrentPage: 1, // 当前页
+      currentPage: 1, // 当前页
       idx: -1, // 当前选项
-      multipleSelection: [] // 哪些项已经打勾了
+      multipleSelection: [], // 哪些项已经打勾了
+      toggle: false // 播放器显示的图标状态
     }
   },
   computed: {
+    ...mapGetters([
+      'isPlay'
+    ]),
     // 计算当前搜索结果表里的数据
     data () {
-      return this.tableData.slice((this.cunrrentPage - 1) * this.pageSize, this.cunrrentPage * this.pageSize)
+      return this.tableData.slice((this.currentPage - 1) * this.pageSize, this.currentPage * this.pageSize)
     }
   },
   watch: {
@@ -164,10 +195,13 @@ export default {
     this.singerName = this.$route.query.name
     this.getData()
   },
+  destroyed () {
+    this.$store.commit('setPlay', false)
+  },
   methods: {
     // 获取当前页
     handleCurrentChange (val) {
-      this.cunrrentPage = val
+      this.currentPage = val
     },
     // 查询所有歌曲
     getData () {
@@ -176,7 +210,7 @@ export default {
       songOfSingerId(this.singerId).then(res => {
         this.tempData = res
         this.tableData = res
-        this.cunrrentPage = 1
+        this.currentPage = 1
       })
     },
     // 添加歌曲
@@ -268,8 +302,52 @@ export default {
         result.push(value)
       }
       return result
+    },
+    // 上传歌曲前的校验
+    beforeSongUpload (file) {
+      let testMsg = file.name.substring(file.name.lastIndexOf('.') + 1)
+      if (testMsg !== 'mp3') {
+        this.$message({
+          message: '上传文件只能是mp3格式',
+          type: 'error'
+        })
+        return false
+      }
+      return true
+    },
+    // 上传歌曲成功之后
+    handleSongSuccess (res) {
+      let _this = this
+      if (res.code === 1) {
+        _this.getData()
+        _this.notify({
+          title: '上传成功',
+          type: 'success'
+        })
+      } else {
+        _this.notify({
+          title: '上传失败',
+          type: 'error'
+        })
+      }
+    },
+    // 更新歌曲url
+    uploadSongUrl (id) {
+      return `${this.$store.state.HOST}/song/updateSongUrl?id=${id}`
+    },
+    // 切换播放音乐歌曲
+    setSongUrl (url, name) {
+      if (this.toggle === name) {
+        this.toggle = false
+        this.$store.commit('setPlay', false)
+      } else {
+        this.toggle = name
+        this.$store.commit('setUrl', this.$store.state.HOST + url)
+        this.$store.commit('setPlay', true)
+      }
     }
   }
+
 }
 </script>
 
@@ -294,5 +372,26 @@ export default {
 .pageination {
   display: flex;
   justify-content: center;
+}
+
+.play {
+  position: absolute;
+  z-index: 100;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  top: 18px;
+  left: 15px;
+}
+
+.icon {
+  width: 2em;
+  height: 2em;
+  color: #ffffff;
+  fill: currentColor;
+  overflow: hidden;
 }
 </style>

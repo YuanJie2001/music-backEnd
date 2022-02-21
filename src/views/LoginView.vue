@@ -63,7 +63,7 @@ export default {
 <style scoped>
 .login-wrap {
   position: absolute;
-  background: url("../assets/img/backstage-bg.jpg");
+  background: url("../assets/img/login.jpg");
   background-attachment: fixed;
   background-position: center;
   background-size: cover;

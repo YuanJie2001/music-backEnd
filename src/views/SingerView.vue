@@ -3,7 +3,7 @@
     <div class="container">
       <div class="handle-box">
         <el-button type="primary" size="mini" @click="deleteAll">批量删除</el-button>
-        <el-input v-model="select_word" size="mini" placholder="请输入歌手名" class="handle-input"/>
+        <el-input v-model="select_word" size="mini" placeholder="请输入歌手名" class="handle-input"/>
         <el-button type="primary" size="mini" @click="centerDialogVisible=true">添加歌手</el-button>
       </div>
     </div>
@@ -13,7 +13,7 @@
       <el-table-column label="歌手图片" width="110px" align="center">
         <template slot-scope="scope">
           <div class="singer-img">
-            <img :src="getUrl(scope.row.avator)" style="width: 100%" alt="">
+            <img :src="getUrl(scope.row.avator)" style="width: 100%" alt=""/>
           </div>
           <el-upload :action="uploadUrl(scope.row.id)"
                      :before-upload="beforeAvatorUpload"
@@ -41,6 +41,8 @@
           </p>
         </template>
       </el-table-column>
+      <el-table-column prop="createTime" label="创建时间" width="150px" align="center"/>
+      <el-table-column prop="updateTime" label="修改时间" width="150px" align="center"/>
       <el-table-column label="歌曲管理" width="110px" align="center">
         <template slot-scope="scope">
           <el-button size="mini" @click="songEdit(scope.row.id,scope.row.name)">歌曲管理</el-button>
@@ -57,7 +59,7 @@
       <el-pagination
         background
         layout="total,prev,pager,next"
-        :current-page="cunrrentPage"
+        :current-page="currentPage"
         :page-size="pageSize"
         :total="tableData.length"
         @current-change="handleCurrentChange"
@@ -161,7 +163,7 @@ export default {
       tempData: [],
       select_word: '',
       pageSize: 5, // 分页,每页数据
-      cunrrentPage: 1, // 当前页
+      currentPage: 1, // 当前页
       idx: -1, // 当前选项
       multipleSelection: [] // 哪些项已经打勾了
     }
@@ -169,7 +171,7 @@ export default {
   computed: {
     // 计算当前搜索结果表里的数据
     data () {
-      return this.tableData.slice((this.cunrrentPage - 1) * this.pageSize, this.cunrrentPage * this.pageSize)
+      return this.tableData.slice((this.currentPage - 1) * this.pageSize, this.currentPage * this.pageSize)
     }
   },
   watch: {
@@ -193,7 +195,7 @@ export default {
   methods: {
     // 获取当前页
     handleCurrentChange (val) {
-      this.cunrrentPage = val
+      this.currentPage = val
     },
     // 查询所有歌手
     getData () {
@@ -202,7 +204,7 @@ export default {
       getAllSinger().then(res => {
         this.tempData = res
         this.tableData = res
-        this.cunrrentPage = 1
+        this.currentPage = 1
       })
     },
     // 添加歌手
